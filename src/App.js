@@ -12,75 +12,82 @@ function App() {
 
   useEffect(() => {
 
-    const formatFiles = (jsonArray) =>{
-      let format = []
-      jsonArray.forEach(fileObj => {
-        fileObj.lines.forEach(line =>{
-          //por cada linea creo un registro con el nombre mas los datos de la linea
-          format = format.concat({name: fileObj.file,hex: line.hex, text: line.text,number: line.number})
-         })
-      });
-      
-      //let format = jsonArray.foreach()
-      //alert(JSON.stringify(format))
-      return format;
-    }
-    const obtenerFiles = async () => {
-      const options = {
-          method: "GET"
-      };
-
-      await fetch(`${configData.SERVER_URL}`, options)
-      .then((response) => {
-          response.json().then(async(json) =>
-          {
-            
-            setFormatedFiles(formatFiles(json))
-          
-      
-      }).catch(exception => {
-          alert("Hubo un error obteniendo los archivos")
-
-      });
-      });
+   
     
-      
-    }
     if(!infoCargada){
-      obtenerFiles()
+      obtenerFiles("")
       setinfoCargada(true)
     }
     
 
   });
-  
+  const formatFiles = (jsonArray) =>{
+    let format = []
+    jsonArray.forEach(fileObj => {
+      fileObj.lines.forEach(line =>{
+        //por cada linea creo un registro con el nombre mas los datos de la linea
+        format = format.concat({name: fileObj.file,hex: line.hex, text: line.text,number: line.number})
+       })
+    });
+    
+    //let format = jsonArray.foreach()
+    //alert(JSON.stringify(format))
+    return format;
+  }
+  const obtenerFiles = async (query) => {
+    const options = {
+        method: "GET"
+    };
+    var url = `${configData.SERVER_URL}` + (query? "?fileName="+query : "")
+    
+    await fetch(url, options)
+    .then((response) => {
+        response.json().then(async(json) =>
+        {
+          
+          setFormatedFiles(formatFiles(json))
+    
+    }).catch(exception => {
+        alert("Hubo un error obteniendo los archivos")
 
+    });
+    });
+  
+    
+  }
+  function handleChange(event) {
+    obtenerFiles(event.target.value)
+  }
   return (
     <div className="App">
       <div className='Header p-2'>React test app</div>
       <div className='Container'>
-      <Table size="sm" striped bordered >
-      <thead>
-        <tr>
-          <th>File name</th>
-          <th>Text</th>
-          <th>Number</th>
-          <th>Hex</th>
-        </tr>
-      </thead>
-      <tbody>
-      {formattedFiles?.map((item, index) => {
-            return <tr key={item.hex}>
-                    <td>{item?.name}</td>                    
-                    <td>{item?.text}</td>
-                    <td>{item?.number}</td>
-                    <td>{item?.hex}</td>
-                  </tr>
-         })
-        
-        }
-      </tbody>
-    </Table>
+        <div className="input-group">
+        <input  type="text" className="form-control CustomInput" placeholder='Ingrese el nombre el archivo' onChange={handleChange}></input>
+
+        </div>
+        <Table size="sm" striped bordered >
+        <thead>
+          <tr>
+            <th>File name</th>
+            <th>Text</th>
+            <th>Number</th>
+            <th>Hex</th>
+          </tr>
+        </thead>
+        <tbody>
+        {formattedFiles?.map((item, index) => {
+              return <tr key={item.hex}>
+                      <td>{item?.name}</td>                    
+                      <td>{item?.text}</td>
+                      <td>{item?.number}</td>
+                      <td>{item?.hex}</td>
+                    </tr>
+          })
+          
+          }
+        </tbody>
+        </Table>
       </div>
     
     </div>

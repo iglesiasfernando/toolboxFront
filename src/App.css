@@ -9,6 +9,9 @@
 .Container{
   margin:1% 4% 0% 4%
 }
+.CustomInput{
+  margin-bottom: 1%;
+}
 .Header{
   background-color: red;
   color: white;
