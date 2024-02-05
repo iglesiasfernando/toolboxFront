@@ -4,11 +4,13 @@ import './App.css';
 import configData from './config.json';
 
 import Table from 'react-bootstrap/Table';
+import { Alert, Button, Toast, ToastContainer } from 'react-bootstrap';
 
 
 function App() {
   const [formattedFiles, setFormatedFiles] = useState([]);
   const [infoCargada, setinfoCargada] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
 
@@ -42,10 +44,10 @@ function App() {
     
     await fetch(url, options)
     .then((response) => {
-        response.json().then(async(json) =>
+        response.json().then(async(filesJson) =>
         {
-          
-          setFormatedFiles(formatFiles(json))
+          setShowAlert(filesJson.length ===0)            
+          setFormatedFiles(formatFiles(filesJson))
     
     }).catch(exception => {
         alert("Hubo un error obteniendo los archivos")
@@ -89,8 +91,19 @@ function App() {
         </tbody>
         </Table>
       </div>
-    
+      
+      <ToastContainer position="top-end" >
+        <Toast onClose={() => setShowAlert(false)} show={showAlert} delay={5000} autohide >
+          <Toast.Header>
+            <strong className="me-auto">Atención!</strong>
+          </Toast.Header>
+          <Toast.Body>No se encontraron archivos con el nombre solicitado</Toast.Body>
+        </Toast>
+      </ToastContainer>
+
+        
     </div>
+    
   );
 }
 
